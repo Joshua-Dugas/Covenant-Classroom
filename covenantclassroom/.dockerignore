@@ -1,0 +1,10 @@
+.gradle/
+build/
+!.dockerignore
+!.gradle/buildOutputCleanup/
+gradle-wrapper.jar
+gradlew
+gradlew.bat
+*.log
+.git
+.gitignore
