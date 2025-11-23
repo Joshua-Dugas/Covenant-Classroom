@@ -1,0 +1,30 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"></html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/BasicStyle.css}" />
+    <title>Covenant Classroom</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a class="logo" href="/">Covenant Classroom</a>
+              <h1 th:inline="text">Hello <span th:remove="tag" sec:authentication="name">thymeleaf</span>!</h1>
+                <form th:action="@{/logout}" method="post">
+                <input type="submit" value="Sign Out"/>
+                </form>
+            <nav class="main-nav" aria-label="Primary navigation">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/*">Courses</a></li>
+                    <li><a href="/*">Calendar</a></li>
+                    <li><a href="/*">Assignments</a></li>
+                    <li><a href="/*"">Report Card</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+</body>
+</html>
