@@ -1,6 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"></html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,17 +10,18 @@
     <header class="site-header">
         <div class="container">
             <a class="logo" href="/">Covenant Classroom</a>
-              <h1 th:inline="text">Hello <span th:remove="tag" sec:authentication="name">thymeleaf</span>!</h1>
-                <form th:action="@{/logout}" method="post">
-                <input type="submit" value="Sign Out"/>
-                </form>
+                        <h1 th:inline="text">Hello <span sec:authentication="name">Guest</span>!</h1>
+                        <form th:action="@{/logout}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <input type="submit" value="Sign Out"/>
+                        </form>
             <nav class="main-nav" aria-label="Primary navigation">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="/*">Courses</a></li>
-                    <li><a href="/*">Calendar</a></li>
-                    <li><a href="/*">Assignments</a></li>
-                    <li><a href="/*"">Report Card</a></li>
+                    <li><a href="/courses">Courses</a></li>
+                    <li><a href="/calendar">Calendar</a></li>
+                    <li><a href="/assignments">Assignments</a></li>
+                    <li><a href="/report-card">Report Card</a></li>
                 </ul>
             </nav>
         </div>

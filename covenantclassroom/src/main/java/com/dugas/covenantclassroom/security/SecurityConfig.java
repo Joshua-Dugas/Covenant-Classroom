@@ -1,16 +1,17 @@
 package com.dugas.covenantclassroom.security;
 
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import com.dugas.covenantclassroom.service.CustomUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.core.userdetails.User;
 
 @Configuration
 @EnableWebSecurity
@@ -19,15 +20,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/home", "/login").permitAll() //Add any url needing auth to access here
+				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+				.requestMatchers("/login", "/userlogin").permitAll() 
 				.anyRequest().authenticated()
 			)
 			.formLogin((form) -> form
 				.loginPage("/userlogin")
+				.loginProcessingUrl("/login")
 				.permitAll()
-                .defaultSuccessUrl("/")
+				.defaultSuccessUrl("/home", true) 
 			)
-			.logout((logout) -> logout.permitAll());
+			.logout((logout) -> logout
+				.logoutUrl("/logout")
+				.invalidateHttpSession(true)
+				.deleteCookies("JSESSIONID")
+				.logoutSuccessUrl("/userlogin?logout")
+				.permitAll());
 
 		return http.build();
 	}
@@ -37,18 +45,16 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-    //This is just for rapid testing and should be removed when user service is complete
-    @Bean
-	public UserDetailsService userDetailsService() {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		UserDetails user =
-			 User.builder()
-				.username("user")
-				.password(encoder.encode("password"))
-				.roles("USER")
-				.build();
+	@Bean
+	public UserDetailsService userDetailsService(CustomUserDetailsService uds) {
+		return uds;
+	}
 
-		return new InMemoryUserDetailsManager(user);
+	@Bean
+	public AuthenticationManager authenticationManager(HttpSecurity http, UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) throws Exception {
+		AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+		authBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+		return authBuilder.build();
 	}
 }
     
